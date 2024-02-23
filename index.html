@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background: white;
+        }
+        h1 {
+            color: #333;
+        }
+        #quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .question {
+            margin-bottom: 20px;
+            color:blue ;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+            color:rgba(233, 51, 6, 0.986);
+        }
+        .option {
+            display: inline-block;
+            margin: 5px;
+            padding: 15px;
+            background-color: #eee;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color: rgba(241, 7, 7, 0.336);
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            background:rgb(38, 0, 255);
+            color: red;
+        }
+
+
+
+/* Estilos para o contêiner do quiz */
+#quiz-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para as perguntas */
+.question {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Estilos para as opções */
+.option {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.option:hover {
+    background-color: #ccc;
+}
+
+/* Adicione estilos para feedback visual */
+.correct-answer {
+    background-color: #28a745; /* Cor de fundo para respostas corretas */
+    color: #fff; /* Cor do texto para respostas corretas */
+}
+
+.incorrect-answer {
+    background-color: #dc3545; /* Cor de fundo para respostas incorretas */
+    color: #fff; /* Cor do texto para respostas incorretas */
+}
+
+
+/* Estilos para o botão Verificar Resposta */
+#quiz-container button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#quiz-container button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para o resultado */
+#result {
+    margin-top: 20px;
+    font-weight: bold;
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Quiz Interativo</h1>
+        <div id="question-container" class="question"></div>
+        <ul id="options-container" class="options"></ul>
+        <button onclick="verificarResposta()">Verificar Resposta</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // dados do questionarios
+        const quizData = [
+            {
+                question: "O que é uma fintech?",
+                options: [
+                    "Empresa de carro", 
+                    "Empresa de comercios", 
+                    "Empresa de criptomoedas", 
+                    "Empresa financeira"
+                ],
+                correctAnswer: "Empresa financeira"
+            },
+            
+            {
+                question: "ESTRUTURA DO SISTEMA FINANCEIRO NACIONAL?",
+                options: [
+                    "Agentes econômicos", 
+                    "Cambias, monetarias e mercado de capitais", 
+                    "Normativas, Supervisoras e Operadoras"
+                ],
+                correctAnswer: "Normativas, Supervisoras e Operadoras"
+            },
+
+            {
+                question: "Conselho Monetário Nacional",
+                options: [
+                    "Enfrentam as partes normativas que criam as leis e fiscalizam as empresas", 
+                    "Tem ação direta com mercado de câmbio", 
+                    "Regulamentar as operações de crédito das instituições financeiras brasileiras",
+                    "Atrapalha o desenvolvimento da moeda para o país"
+                ],
+                correctAnswer: "Regulamentar as operações de crédito das instituições financeiras brasileiras"
+            },
+
+            {
+                question: "O que faz o Conselho Monetário Nacional?",
+                options: [
+                    "A função principal é a transferência de recursos", 
+                    "Empresa de comercios", 
+                    "Determinar suas políticas de poupança e investimento", 
+                    "Empresa financeira"
+                ],
+                correctAnswer: "Determinar suas políticas de poupança e investimento"
+            },
+
+            {
+            question: "O que é o sistema nacional financeiro ",
+            options: [
+             "Supervisionar as atividades do Banco Central",
+             "Regular a moeda do país",
+             "É um grupo de empresas financeiras "
+            ],
+            correctAnswer: "É um grupo de empresas financeiras"
+
+            }
+        
+        
+            // Adicione mais perguntas conforme necessário
+        ];
+         
+        let currentQuestion = 0;   //pergunta atual
+        let score = 0;  // pontução
+
+        // função carrega questões
+        function carregarPergunta() {
+            const questionContainer = document.getElementById("question-container"); // perguntas
+            const optionsContainer = document.getElementById("options-container");   // opções
+
+            questionContainer.textContent = quizData[currentQuestion].question; // perguntas contener.conteúdo do texto = dados do questionário
+
+            optionsContainer.innerHTML = "";
+            quizData[currentQuestion].options.forEach((option, index) => {
+                const li = document.createElement("li");
+                li.className = "option";
+                li.textContent = option;
+                li.onclick = () => selecioneResponder(index);
+                optionsContainer.appendChild(li);
+            });
+        }
+
+        
+
+        function selecioneResponder(index) {
+    const selectedOption = quizData[currentQuestion].options[index];
+    const correctAnswer = quizData[currentQuestion].correctAnswer;
+    const options = document.getElementsByClassName("option");
+
+    if (selectedOption === correctAnswer) {
+        score++;
+        options[index].classList.add("correct-answer");
+    } else {
+        options[index].classList.add("incorrect-answer");
+    }
+
+    currentQuestion++;
+
+    if (currentQuestion < quizData.length) {
+        carregarPergunta();
+    } else {
+        mostrarResultado();
+    }
+}
+
+
+        function mostrarResultado() {
+            const resultContainer = document.getElementById("result");
+            resultContainer.textContent = `Você acertou ${score} de ${quizData.length} perguntas!`;
+        }
+
+        function verificarResposta() {
+            const options = document.getElementsByClassName("option");
+            for (let i = 0; i < options.length; i++) {
+                options[i].style.pointerEvents = "none";
+            }
+            selecioneResponder();
+        }
+
+        carregarPergunta();
+    </script>
+</body>
+</html>
